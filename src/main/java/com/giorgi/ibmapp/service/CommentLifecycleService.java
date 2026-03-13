@@ -6,6 +6,7 @@ import com.giorgi.ibmapp.repostiory.CommentRecordRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class CommentLifecycleService {
@@ -23,5 +24,8 @@ public class CommentLifecycleService {
         comment.setState(CommentState.RECEIVED);
 
         return commentRepository.save(comment);
+    }
+    public List<CommentRecord> fetchAllComments() {
+        return commentRepository.findAll();
     }
 }

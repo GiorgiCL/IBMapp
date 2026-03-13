@@ -3,10 +3,9 @@ package com.giorgi.ibmapp.api;
 import com.giorgi.ibmapp.domain.CommentRecord;
 import com.giorgi.ibmapp.service.CommentLifecycleService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/comments")
@@ -23,6 +22,10 @@ public class CommentInboxController {
                 request.getAuthorHandle(),
                 request.getBody()
         );
+    }
+    @GetMapping
+    public List<CommentRecord> getAllComments() {
+        return commentService.fetchAllComments();
     }
 
 }
