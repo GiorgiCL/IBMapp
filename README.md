@@ -70,7 +70,7 @@ Custom exceptions and global error handling.
 The comment lifecycle is represented by the following states.
 
 RECEIVED  
-UNDER_REVIEW  
+  
 NO_TICKET_CREATED  
 TICKET_CREATED  
 TRIAGE_FAILED
@@ -267,8 +267,18 @@ The application currently uses an in memory H2 database so data is lost after re
 
 AI output quality depends on the external model response.
 
-The project focuses on backend functionality and does not include a frontend interface.
+The project focuses primarily on backend functionality.
 
+A very small frontend dashboard is included only for convenience, so that anyone
+reviewing the project can interact with the API visually without needing tools
+such as Postman or curl.
+
+Frontend development is not the focus of this exercise and is outside my current
+primary skill set, therefore the UI was generated with AI assistance.
+
+All backend implementation  including the architecture, layered design,
+API endpoints, Hugging Face integration, service logic, persistence layer,
+and error handling was written by me.
 ## Possible Future Improvements
 
 Replace H2 with PostgreSQL  

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>PulseDesk</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #111118;
+            --border: #2a2a3e;
+            --border-lit: #3a3a5e;
+            --text: #e2e2f0;
+            --muted: #8888aa;
+            --accent: #4f8ef7;
+            --accent-dim: #1a2a4a;
+            --green: #2dd4a0;
+            --green-dim: #0d2e22;
+            --red: #f75f5f;
+            --red-dim: #2e0f0f;
+            --yellow: #f7c34f;
+            --yellow-dim: #2e220a;
+            --mono: 'IBM Plex Mono', monospace;
+            --sans: 'IBM Plex Sans', sans-serif;
+        }
+
+        html { font-size: 15px; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER */
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 18px 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .logo-mark {
+            width: 32px; height: 32px;
+            background: var(--accent);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 500;
+            color: #fff;
+            letter-spacing: -1px;
+        }
+
+        header h1 {
+            font-family: var(--mono);
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: var(--text);
+        }
+
+        /* LAYOUT */
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 32px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        @media (max-width: 720px) {
+            .container { grid-template-columns: 1fr; padding: 24px 16px; }
+            header { padding: 16px 20px; }
+        }
+
+        /* PANELS */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-body { padding: 24px; }
+
+        /* FORM */
+        .field { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-size: 0.72rem;
+            font-family: var(--mono);
+            color: var(--muted);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        input, textarea {
+            width: 100%;
+            background: #16161f;
+            border: 1px solid var(--border-lit);
+            border-radius: 7px;
+            padding: 13px 15px;
+            color: #f0f0ff;
+            font-family: var(--sans);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.15s, background 0.15s;
+            resize: none;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #44445a;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+            background: #1a1a28;
+        }
+
+        textarea { min-height: 140px; line-height: 1.6; }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 13px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+            margin-top: 4px;
+        }
+
+        .submit-btn:hover { opacity: 0.88; }
+        .submit-btn:active { transform: scale(0.99); }
+        .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* RESULT BOX */
+        .result-box {
+            margin-top: 18px;
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .result-box.ticket   { background: var(--green-dim); border: 1px solid var(--green);  color: var(--green); }
+        .result-box.no-ticket{ background: var(--accent-dim); border: 1px solid var(--accent); color: var(--accent); }
+        .result-box.failed   { background: var(--red-dim);   border: 1px solid var(--red);    color: var(--red); }
+
+        .result-label {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.75;
+            margin-bottom: 4px;
+        }
+
+        .result-msg { font-weight: 500; }
+
+        /* TICKETS LIST */
+        .tickets-wrap {
+            max-height: 560px;
+            overflow-y: auto;
+        }
+
+        .tickets-wrap::-webkit-scrollbar { width: 4px; }
+        .tickets-wrap::-webkit-scrollbar-track { background: transparent; }
+        .tickets-wrap::-webkit-scrollbar-thumb { background: var(--border-lit); border-radius: 4px; }
+
+        .ticket-card {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            animation: fadeIn 0.2s ease;
+            transition: background 0.12s;
+        }
+
+        .ticket-card:last-child { border-bottom: none; }
+        .ticket-card:hover { background: rgba(255,255,255,0.02); }
+
+        .ticket-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .ticket-title {
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .badges { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+
+        .badge {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .badge.cat-bug     { background: var(--red-dim);    color: var(--red);    border: 1px solid var(--red); }
+        .badge.cat-billing { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow); }
+        .badge.cat-feature { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent); }
+        .badge.cat-account { background: #1e1230;           color: #b48ef7;       border: 1px solid #b48ef7; }
+        .badge.cat-other   { background: #1a1a1a;           color: var(--muted);  border: 1px solid var(--border-lit); }
+
+        .badge.pri-high   { background: var(--red-dim);    color: var(--red); }
+        .badge.pri-medium { background: var(--yellow-dim); color: var(--yellow); }
+        .badge.pri-low    { background: var(--green-dim);  color: var(--green); }
+
+        .ticket-summary {
+            font-size: 0.82rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .ticket-id {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            color: var(--border-lit);
+            margin-top: 10px;
+        }
+
+        /* EMPTY */
+        .empty {
+            padding: 48px 24px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-family: var(--mono);
+        }
+
+        /* REFRESH BTN */
+        .refresh-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 5px;
+            padding: 5px 12px;
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            cursor: pointer;
+            letter-spacing: 0.04em;
+            transition: border-color 0.15s, color 0.15s;
+        }
+
+        .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .count-badge {
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid var(--accent);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-mark">PD</div>
+    <h1>PulseDesk</h1>
+</header>
+
+<div class="container">
+
+    <!-- LEFT: Submit Comment -->
+    <div class="panel">
+        <div class="panel-header">
+            <span class="panel-title">Submit Comment</span>
+        </div>
+        <div class="panel-body">
+            <div class="field">
+                <label>Author Handle</label>
+                <input id="authorHandle" type="text" placeholder="e.g. user123" autocomplete="off"/>
+            </div>
+            <div class="field">
+                <label>Comment</label>
+                <textarea id="body" placeholder="Describe your issue or leave feedback..."></textarea>
+            </div>
+            <button class="submit-btn" id="submitBtn" onclick="submitComment()">Submit →</button>
+
+            <div class="result-box" id="resultBox">
+                <div class="result-label" id="resultLabel"></div>
+                <div class="result-msg"  id="resultMsg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Tickets -->
+    <div class="panel">
+        <div class="panel-header">
+      <span class="panel-title">
+        Support Tickets
+        <span class="count-badge" id="ticketCount">0</span>
+      </span>
+            <button class="refresh-btn" onclick="loadTickets()">↻ refresh</button>
+        </div>
+        <div class="tickets-wrap" id="ticketsList">
+            <div class="empty">No tickets yet.</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const API = '';
+
+    async function submitComment() {
+        const author = document.getElementById('authorHandle').value.trim();
+        const body   = document.getElementById('body').value.trim();
+        const btn    = document.getElementById('submitBtn');
+        const box    = document.getElementById('resultBox');
+
+        if (!author || !body) {
+            showResult('failed', '⚠ Missing Field', 'Author and comment are both required.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Analyzing...';
+        box.style.display = 'none';
+
+        try {
+            const res = await fetch(`${API}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ authorHandle: author, body })
+            });
+
+            const data = await res.json();
+
+            if (data.state === 'TICKET_CREATED') {
+                showResult('ticket', '✓ Ticket Created', `Ticket #${data.linkedTicketId} was generated. Loading tickets...`);
+                setTimeout(loadTickets, 600);
+            } else if (data.state === 'NO_TICKET_CREATED') {
+                showResult('no-ticket', '— No Ticket Needed', 'Comment stored. AI determined this does not require a support ticket.');
+            } else {
+                showResult('failed', '⚠ Triage Failed', 'Comment stored but AI analysis failed. Try again later.');
+            }
+
+            document.getElementById('authorHandle').value = '';
+            document.getElementById('body').value = '';
+
+        } catch (e) {
+            showResult('failed', '⚠ Request Failed', 'Could not reach the server.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Submit →';
+        }
+    }
+
+    function showResult(type, label, msg) {
+        const box = document.getElementById('resultBox');
+        box.className = `result-box ${type}`;
+        document.getElementById('resultLabel').textContent = label;
+        document.getElementById('resultMsg').textContent   = msg;
+        box.style.display = 'block';
+    }
+
+    async function loadTickets() {
+        try {
+            const res  = await fetch(`${API}/tickets`);
+            const data = await res.json();
+            renderTickets(data);
+        } catch (e) {
+            document.getElementById('ticketsList').innerHTML = `<div class="empty">Failed to load tickets.</div>`;
+        }
+    }
+
+    function renderTickets(tickets) {
+        const el = document.getElementById('ticketsList');
+        document.getElementById('ticketCount').textContent = tickets.length;
+
+        if (!tickets.length) {
+            el.innerHTML = `<div class="empty">No tickets yet.</div>`;
+            return;
+        }
+
+        el.innerHTML = tickets.slice().reverse().map(t => `
+      <div class="ticket-card">
+        <div class="ticket-top">
+          <div class="ticket-title">${esc(t.title)}</div>
+          <div class="badges">
+            <span class="badge cat-${t.category.toLowerCase()}">${t.category}</span>
+            <span class="badge pri-${t.priority.toLowerCase()}">${t.priority}</span>
+          </div>
+        </div>
+        <div class="ticket-summary">${esc(t.summary)}</div>
+        <div class="ticket-id">#${t.id} · from comment #${t.sourceCommentId}</div>
+      </div>
+    `).join('');
+    }
+
+    function esc(str) {
+        return String(str ?? '')
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;');
+    }
+
+    loadTickets();
+</script>
+</body>
+</html>
