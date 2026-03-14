@@ -10,6 +10,7 @@ public class AiTicketDraft {
     public boolean isShouldCreateTicket() {
         return shouldCreateTicket;
     }
+
     public void setShouldCreateTicket(boolean shouldCreateTicket) {
         this.shouldCreateTicket = shouldCreateTicket;
     }
@@ -35,4 +36,8 @@ public class AiTicketDraft {
         return summary;
 
     }
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
 }

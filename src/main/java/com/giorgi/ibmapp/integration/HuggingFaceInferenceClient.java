@@ -76,6 +76,7 @@ public class HuggingFaceInferenceClient {
         }
         String content = response.getChoices().get(0).getMessage().getContent();
 
+        content = content.replaceAll("(?s)```json\\s*|```", "").trim();
         try {
             return objectMapper.readValue(content, AiTicketDraft.class);
         }catch(Exception exception){

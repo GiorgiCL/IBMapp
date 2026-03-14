@@ -4,6 +4,7 @@ import com.giorgi.ibmapp.domain.*;
 import com.giorgi.ibmapp.integration.AiTicketDraft;
 import com.giorgi.ibmapp.repository.CommentRecordRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,6 +23,7 @@ public class  CommentLifecycleService {
         this.draftMapper = draftMapper;
 
     }
+    @Transactional
     public CommentRecord registerNewComment(String authorHandle,String body){
         CommentRecord comment = new CommentRecord();
 
