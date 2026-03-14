@@ -1,4 +1,4 @@
-package com.giorgi.ibmapp.repostiory;
+package com.giorgi.ibmapp.repository;
 
 import com.giorgi.ibmapp.domain.CommentRecord;
 import org.springframework.data.jpa.repository.JpaRepository;

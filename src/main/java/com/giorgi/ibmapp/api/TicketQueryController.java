@@ -1,7 +1,7 @@
 package com.giorgi.ibmapp.api;
 
 import com.giorgi.ibmapp.domain.SupportTicket;
-import com.giorgi.ibmapp.repostiory.SupportTicketRepository;
+import com.giorgi.ibmapp.repository.SupportTicketRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +19,7 @@ public class TicketQueryController {
     }
     @GetMapping
     public List<SupportTicket> getAllTickets() {
+
         return supportRepository.findAll();
     }
     @GetMapping("/{ticketId}")

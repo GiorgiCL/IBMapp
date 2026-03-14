@@ -3,7 +3,7 @@ package com.giorgi.ibmapp.service;
 import com.giorgi.ibmapp.domain.SupportTicket;
 import com.giorgi.ibmapp.domain.TicketCategory;
 import com.giorgi.ibmapp.domain.TicketPriority;
-import com.giorgi.ibmapp.repostiory.SupportTicketRepository;
+import com.giorgi.ibmapp.repository.SupportTicketRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
