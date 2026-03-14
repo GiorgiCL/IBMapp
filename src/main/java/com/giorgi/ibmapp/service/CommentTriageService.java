@@ -1,5 +1,6 @@
 package com.giorgi.ibmapp.service;
 
+import com.giorgi.ibmapp.integration.AiTicketDraft;
 import com.giorgi.ibmapp.integration.HuggingFaceInferenceClient;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +11,8 @@ public class CommentTriageService {
     public CommentTriageService(HuggingFaceInferenceClient aiClient) {
         this.aiClient = aiClient;
     }
-    public boolean shouldCreateTicket(String commentBody){
-        String result = aiClient.analyzeComment(commentBody);
-
-        if(result == null){
-            return false;
-        }
-        return result.trim().equalsIgnoreCase("TICKET");
+    public AiTicketDraft analyzeComment(String commentBody){
+        return aiClient.analyzeComment(commentBody);
     }
-}
+
+    }

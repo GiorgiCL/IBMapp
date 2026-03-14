@@ -1,5 +1,6 @@
 package com.giorgi.ibmapp.integration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giorgi.ibmapp.config.HuggingFaceProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,22 +18,47 @@ public class HuggingFaceInferenceClient {
 
     private final HuggingFaceProperties properties;
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     public HuggingFaceInferenceClient(HuggingFaceProperties properties) {
         this.properties = properties;
         this.restTemplate = new RestTemplate();
+        this.objectMapper = new ObjectMapper();
     }
 
-    public String analyzeComment(String commentText) {
+    public AiTicketDraft analyzeComment(String commentText){
         HuggingFaceRequest request = new HuggingFaceRequest();
         request.setModel(MODEL_NAME);
         request.setTemperature(0.1);
         request.setMessages(List.of(
-                new HuggingFaceMessage("system",
-                        "You analyze product feedback. Return only plain text. Say TICKET if the comment is a real support issue. Say NO_TICKET if it is not."),
+                new HuggingFaceMessage(
+                        "system",
+                        """
+                               You analyze product feedback for a support platform.
+                               
+                               Return only valid JSON with this structure :
+                               {
+                               "shouldCreateTicket": true,
+                               "title": "short issue title",
+                               "category": "BUG",
+                               "priority": "HIGH",
+                               "summary": "short summary"
+                               }
+                               Rules:
+                               1. shouldCreateTicket must be true only for real support issues
+                               2. category must be one of : BUG, FEATURE, BILLING, ACCOUNT, OTHER
+                               3.priority must be one of: LOW, MEDIUM, HIGH
+                               4. if shouldCreateTicket is false, still return valid JSON and use:
+                               title = "No ticket needed"
+                               category = "OTHER"
+                               priority = "LOW"
+                               summary = "This comment does not require ticket creation"
+                               Return JSON only. No explanation.
+                               """
+                ),
                 new HuggingFaceMessage("user", commentText)
-        ));
 
+        ));
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(properties.getApiToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -48,7 +74,12 @@ public class HuggingFaceInferenceClient {
         if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
             throw new IllegalStateException("Empty response from Hugging Face");
         }
+        String content = response.getChoices().get(0).getMessage().getContent();
 
-        return response.getChoices().get(0).getMessage().getContent();
+        try {
+            return objectMapper.readValue(content, AiTicketDraft.class);
+        }catch(Exception exception){
+            throw new IllegalStateException("Failed to parse AI response" + content,exception );
+        }
     }
 }

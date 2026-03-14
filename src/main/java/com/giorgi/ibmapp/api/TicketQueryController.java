@@ -1,6 +1,7 @@
 package com.giorgi.ibmapp.api;
 
 import com.giorgi.ibmapp.domain.SupportTicket;
+import com.giorgi.ibmapp.exception.TicketNotFoundException;
 import com.giorgi.ibmapp.repository.SupportTicketRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,7 @@ public class TicketQueryController {
     }
     @GetMapping("/{ticketId}")
     public SupportTicket getTicketById(@PathVariable Long ticketId) {
-        return supportRepository.findById(ticketId).orElse(null);
+        return supportRepository.findById(ticketId).orElseThrow(() -> new TicketNotFoundException(ticketId));
     }
 }
 
